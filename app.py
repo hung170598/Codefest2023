@@ -33,8 +33,8 @@ def main():
         session["pid"] = pid
         session["game"] = gameId
 
-    # move_thread = Thread(target=move, args=(sk.agent,))
-    # move_thread.start()
+    move_thread = Thread(target=move, args=(sk.agent,))
+    move_thread.start()
     return render_template("index.html", gameId=gameId, player=pid, players = sk.agent.game_state["map_info"]["players"])
 
 
@@ -67,11 +67,13 @@ def on_next_step(data):
     cols = sk.agent.maps.cols
     rows = sk.agent.maps.rows
     maps = sk.agent.maps
+    maps.bfs(sk.agent.current_position, False)
     # print(maps.bomb_point_maps[x][y])
     print(maps.spoil_maps[x][y])
     print(maps.get_free_neighbors(sk.agent.current_position, False))
     # game.show_map(maps.bomb_point_maps, cols, rows)
-    game.show_map(maps.spoil_maps, cols, rows)
+    game.show_map(maps.block_maps, cols, rows)
+    game.show_node_maps(maps.visited_maps, cols, rows)
     # for nb in nbs:
     #     for location, action in nb.items():
     #         lx, ly = location

@@ -26,10 +26,10 @@ MYSTIC_VALUE = 1
 # Time ms
 BOMB_DEPLAY = 2000
 EGG_DEPLAY = 400
-TICK_DELAY = 400
+TICK_DELAY = 500
 BOMB_DURATION = 1000
 # time bomb begin action
-BOMB_DELTA_TIME = 200
+BOMB_DELTA_TIME = 500
 # max 
 MAX_DELAY_EGG = 4
 MAX_SPEED_EGG = 5
@@ -123,6 +123,13 @@ def show_map(maps, cols, rows):
     for pos_y in range(rows):
         for pos_x in range(cols):   
             print("%4d" % maps[pos_x][pos_y], end="")
+        print()
+
+
+def show_node_maps(maps, cols, rows):
+    for pos_y in range(rows):
+        for pos_x in range(cols):   
+            print("%4d" % maps[pos_x][pos_y].cost, end="")
         print()
 
 
