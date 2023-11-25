@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codefest Bot</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+</head>
+
+<body>
+    <form method="post" class="buttons">
+        <label for="fgame">Game ID:</label>
+        <input type="text" id="fgame" name="game" value="{{gameId}}"><br><br>
+
+        <label for="fplayer">Player ID:</label>
+        <input type="text" id="fplayer" name="player" value="{{player}}"><br><br>
+
+        <button type="submit" class="play-btn" id="play-btn" name="play">Play</button>
+    </form>
+
+
+    <div class="container">
+        <div class="size-bar">
+            <div style="width: 50%; float:left">
+                <p>Player: <span>{{players[0].id}}</span></p>
+                <p>Point: <span>{{players[0].score}}</span></p>
+                <p>Health: <span>{{players[0].lives}}</span></p>
+                <p>Box: <span>{{players[0].box}}</span></p>
+                <p>Speed: <span>{{players[0].dragonEggSpeed}}</span></p>
+                <p>Delay: <span>{{players[0].dragonEggDelay}}</span></p>
+                <p>Attack: <span>{{players[0].dragonEggAttack}}</span></p>
+                <p>Mystic: <span>{{players[0].dragonEggMystic}}</span></p>
+            </div>
+            <div style="width: 50%; float:left">
+                <p>Player: <span>{{players[1].id}}</span></p>
+                <p>Point: <span>{{players[1].score}}</span></p>
+                <p>Health: <span>{{players[1].lives}}</span></p>
+                <p>Box: <span>{{players[1].box}}</span></p>
+                <p>Speed: <span>{{players[1].dragonEggSpeed}}</span></p>
+                <p>Delay: <span>{{players[1].dragonEggDelay}}</span></p>
+                <p>Attack: <span>{{players[1].dragonEggAttack}}</span></p>
+                <p>Mystic: <span>{{players[1].dragonEggMystic}}</span></p>
+            </div>
+        </div>
+        <canvas id="board"></canvas>
+    </div>
+    {% block javascript %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"
+        integrity="sha512-q/dWJ3kcmjBLU4Qc47E4A9kTB4m3wuTY7vkFJDTZKjTs8jhyGQnaUrxa0Ytd0ssMZhbNua9hE+E7Qv1j+DyZwA=="
+        crossorigin="anonymous"></script>
+    <!-- <script type="text/javascript" charset="utf-8">
+        var socket = io("http://127.0.0.1:5000");
+        socket.on('connect', function () {
+            socket.emit('my event', { data: 'I\'m connected!' });
+        });
+    </script> -->
+    <script src="{{ url_for('static', filename='scripts/index.js') }}"></script>
+    {% endblock javascript %}
+</body>
+
+</html>
