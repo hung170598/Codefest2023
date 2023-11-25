@@ -14,6 +14,8 @@ class BaseAgent:
 
         self.is_start = 0
         self.delay_bomb = 0
+        self.stop_time = 0
+        self.complete_move = True
 
         self.maps: Map = Map()
 
@@ -55,7 +57,7 @@ class BaseAgent:
         # print("Target", target.location)
         if target:
             actions = get_path_actions(get_path(target))
-        return "".join(actions)
+        return "".join(actions)[:MAX_STEP]
 
     @property
     def current_position(self):
@@ -96,6 +98,42 @@ class BaseAgent:
         self.process_block_maps()
         self.process_bombs_maps()
         self.process_bomb_point_maps()
+        self.process_heuristic_map()
+
+    def process_heuristic_map(self):
+        for x in range(self.maps.cols):
+            for y in range(self.maps.rows):
+                value = 0
+                if self.maps.maps[x][y] == BALK:
+                    value = 1
+                elif self.get_egg_cell((x, y)) == 1:
+                    value = -20
+                elif self.get_egg_cell((x, y)) == 2:
+                    value = 2
+                else:
+                    value = self.maps.spoil_maps[x][y]
+                    self.maps.heuristic_maps[x][y] += 4 * value
+                self.process_heuristic_cell(x, y, value)
+        
+        oth_x = self.oth_info["currentPosition"]["col"]
+        oth_y = self.oth_info["currentPosition"]["row"]
+        self.process_heuristic_cell(oth_x, oth_y, PLAYER_BOMB_POINT)
+    
+    def process_heuristic_cell(self, x, y, value):
+        heuristic_maps = self.maps.heuristic_maps
+        bomb_range = get_bomb_range(self.cur_info)
+        for i in range(bomb_range + 1):
+            for j in range(bomb_range + 1):
+                if i + j == 0:
+                    continue
+                if self.maps.is_in_bounds((x + i, y + j)):
+                    heuristic_maps[x + i][y + j] += value/(i + j)
+                if self.maps.is_in_bounds((x - i, y - j)):
+                    heuristic_maps[x - i][y - j] += value/(i + j)
+                if self.maps.is_in_bounds((x + i, y - j)):
+                    heuristic_maps[x + i][y - j] += value/(i + j)
+                if self.maps.is_in_bounds((x - i, y + j)):
+                    heuristic_maps[x - i][y + j] += value/(i + j)
 
     def process_bomb_point_maps(self):
         for x in range(self.maps.cols):
@@ -160,15 +198,15 @@ class BaseAgent:
         bomb_point = 0
         if cell_code == BALK:
             bomb_point += 1
-        if self._is_egg_cell(location) == 2:
+        if self.get_egg_cell(location) == 2:
             bomb_point += 1
-        elif self._is_egg_cell(location) == 1:
+        elif self.get_egg_cell(location) == 1:
             bomb_point = -20
         elif self._is_oth_player_cell(location):
             bomb_point += PLAYER_BOMB_POINT
         return bomb_point
 
-    def _is_egg_cell(self, location):
+    def get_egg_cell(self, location):
         eggs = self.game_state["map_info"]["dragonEggGSTArray"]
         x, y = location
         for egg in eggs:
@@ -191,11 +229,11 @@ class BaseAgent:
 
         for spoil in self.game_state["map_info"]["spoils"]:
             if spoil["spoil_type"] == SPEED:
-                maps.spoil_maps[spoil["col"]][spoil["row"]] = 2
+                maps.spoil_maps[spoil["col"]][spoil["row"]] = SPOIL_VALUE
             elif spoil["spoil_type"] == ATT:
-                maps.spoil_maps[spoil["col"]][spoil["row"]] = 2
+                maps.spoil_maps[spoil["col"]][spoil["row"]] = SPOIL_VALUE
             elif spoil["spoil_type"] == DELAY:
-                maps.spoil_maps[spoil["col"]][spoil["row"]] = 2
+                maps.spoil_maps[spoil["col"]][spoil["row"]] = SPOIL_VALUE
             elif spoil["spoil_type"] == MYSTIC:
                 maps.spoil_maps[spoil["col"]][spoil["row"]] = MYSTIC_VALUE
 

@@ -13,6 +13,16 @@ class Map:
         self.danger_maps = []
         self.bomb_point_maps = []
         self.visited_maps = []
+        self.heuristic_maps = []
+
+    def show_around(self, location, size):
+        print("Print around", size)
+        x, y = location
+        for j in range(max(y - size, 0), min(y + size + 1, self.rows)):
+            for i in range(max(x - size, 0), min(x + size + 1, self.cols)):
+                value = self.danger_maps[i][j]
+                print("%4d" % value, end="")
+            print()
 
     def init_maps(self, game_state):
         map_size = get_map_size(game_state)
@@ -24,6 +34,7 @@ class Map:
         self.block_maps = [[0] * self.rows for _ in range(self.cols)]
         self.danger_maps = [[0] * self.rows for _ in range(self.cols)]
         self.bomb_point_maps = [[0] * self.rows for _ in range(self.cols)]
+        self.heuristic_maps = [[0] * self.rows for _ in range(self.cols)]
         for x in range(self.cols):
             tmp = []
             for y in range(self.rows):
@@ -41,6 +52,7 @@ class Map:
                 self.block_maps[x][y] = 0
                 self.danger_maps[x][y] = max(0, self.danger_maps[x][y] - TICK_DELAY)
                 self.bomb_point_maps[x][y] = 0
+                self.heuristic_maps[x][y] = 0
                 self.visited_maps[x][y] = Node(None, (x, y), STOP)
 
     def update_map(self, game_state):

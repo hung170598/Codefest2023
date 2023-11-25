@@ -1,4 +1,5 @@
 control_ai = "start"
+complete_move = True
 # control
 LEFT = "1"
 RIGHT = "2"
@@ -14,6 +15,8 @@ GATE = 3
 PLACE = 4
 EGG = 5
 BLOCK_VALUES = [WALL, BALK, EGG, PLACE, GATE]
+STATIC_VALUES = [ROAD, WALL, GATE, PLACE, EGG]
+BOMB_BLOCK = [WALL, EGG, BALK]
 # spoil
 ATT = 4
 DELAY = 5
@@ -21,13 +24,15 @@ SPEED = 3
 MYSTIC = 6
 # cell value
 BLOCK = 1
-BOMB_BLOCK = -1000
 MYSTIC_VALUE = 1
+SPOIL_VALUE = 4
 # Time ms
 BOMB_DEPLAY = 2000
 EGG_DEPLAY = 400
 TICK_DELAY = 500
-BOMB_DURATION = 1000
+MAX_STEP = 5
+BOMB_DURATION = 1500
+MAX_STOP_TIME = 700
 # time bomb begin action
 BOMB_DELTA_TIME = 500
 # max 

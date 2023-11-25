@@ -5,8 +5,8 @@ from game import *
 # from agent import Agent
 
 sio = socketio.Client()
-HOST = "http://localhost:80"
-sio.connect(HOST)
+HOST = "http://127.0.0.1:3000"
+sio.connect(HOST, wait_timeout=10)
 agent: BaseAgent = AgentV2("", "")
 
 def get_socket_client():
@@ -50,4 +50,8 @@ def on_ticktack(data):
     agent.game_state = data
     if agent.is_start == 0:
         agent.start_game()
+    else:
+        if data["tag"] == 'player:stop-moving' and data["player_id"] == agent.pid:
+            # print("Complete move!")
+            agent.complete_move = True
     # agent.update_maps()
