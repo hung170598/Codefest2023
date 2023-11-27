@@ -1,13 +1,14 @@
 import socketio
+from agent_v3 import AgentV3
 from base_agent import BaseAgent
 from agent_v2 import AgentV2
 from game import *
 # from agent import Agent
 
 sio = socketio.Client()
-HOST = "http://127.0.0.1:3000"
+HOST = "http://127.0.0.1:80"
 sio.connect(HOST, wait_timeout=10)
-agent: BaseAgent = AgentV2("", "")
+agent: AgentV3 = AgentV3("", "")
 
 def get_socket_client():
     return sio
@@ -48,10 +49,11 @@ def on_join_game(data):
 @sio.on("ticktack player")
 def on_ticktack(data):
     agent.game_state = data
+    # print("tictack ", data['tag'])
     if agent.is_start == 0:
         agent.start_game()
     else:
         if data["tag"] == 'player:stop-moving' and data["player_id"] == agent.pid:
-            # print("Complete move!")
             agent.complete_move = True
-    # agent.update_maps()
+            print("Complete move to ", agent.current_position)
+    # # agent.update_maps()

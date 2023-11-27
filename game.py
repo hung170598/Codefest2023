@@ -1,5 +1,10 @@
+from enum import Enum
+
+
 control_ai = "start"
 complete_move = True
+# cell size px
+CELL_SIZE = 35
 # control
 LEFT = "1"
 RIGHT = "2"
@@ -14,25 +19,26 @@ BALK = 2
 GATE = 3
 PLACE = 4
 EGG = 5
-BLOCK_VALUES = [WALL, BALK, EGG, PLACE, GATE]
+BLOCK_VALUES = [WALL, BALK, PLACE]
 STATIC_VALUES = [ROAD, WALL, GATE, PLACE, EGG]
 BOMB_BLOCK = [WALL, EGG, BALK]
 # spoil
+SPEED = 3
 ATT = 4
 DELAY = 5
-SPEED = 3
 MYSTIC = 6
 # cell value
 BLOCK = 1
 MYSTIC_VALUE = 1
-SPOIL_VALUE = 4
+SPOIL_VALUE = 2
 # Time ms
 BOMB_DEPLAY = 2000
 EGG_DEPLAY = 400
-TICK_DELAY = 500
-MAX_STEP = 5
-BOMB_DURATION = 1500
-MAX_STOP_TIME = 700
+TICK_DELAY = 100
+MAX_STEP = 1
+BOMB_DURATION = 1250
+MAX_STOP_TIME = 400
+NEAR_STEP = int(BOMB_DEPLAY/TICK_DELAY)
 # time bomb begin action
 BOMB_DELTA_TIME = 500
 # max 
@@ -43,6 +49,21 @@ MAX_ATT_RANGE = 4
 # visit map
 VISITED = 1
 PLAYER_BOMB_POINT = 2
+# heuristic value
+class HEURISTIC(Enum):
+    GATE = -10
+    ENEMY_EGG = 2
+    MY_EGG = -2
+    BALK = 1
+# json param
+PLAYER_POSITION = "currentPosition"
+PLAYER_SCORE = "score"
+# tactic
+DROP_BOMB = "DROP_BOMB"
+OUT_BOMB = "OUT_BOMB"
+STAY = "STAY"
+FARM_SCORE = "FARM_SCORE"
+GO_BOMB = "GO_BOMB"
 
 
 def get_cell_code(maps, location):
@@ -51,7 +72,7 @@ def get_cell_code(maps, location):
 
 
 def get_bomb_range(player):
-    return min(MAX_ATT_RANGE, player["dragonEggAttack"] + 1)
+    return player["power"]
 
 
 def get_map_size(game_state):
@@ -137,4 +158,6 @@ def show_node_maps(maps, cols, rows):
             print("%4d" % maps[pos_x][pos_y].cost, end="")
         print()
 
+def calc_number_step(speed, time):
+    return int(time * speed / CELL_SIZE / 1000)
 

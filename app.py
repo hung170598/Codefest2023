@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, session
 from flask_socketio import SocketIO, send, emit
 import time
 from threading import Thread
+from agent_v3 import AgentV3
 from base_agent import BaseAgent
 
 
@@ -18,7 +19,6 @@ KEY = "9af19124-1e87-4ca6-b86e-056ca81009f8"
 GAME_ID = "8506928b-b727-4b6d-a910-70a528b3fe17"
 PLAYER1 = "player1-xxx"
 PLAYER2 = "player2-xxx"
-HOST = "http://localhost:3000"
 GAME_FOUND = "Game Found"
 GAME_NOT_FOUND = "Game Not Found"
 
@@ -68,36 +68,52 @@ def on_next_step(data):
     cols = sk.agent.maps.cols
     rows = sk.agent.maps.rows
     maps = sk.agent.maps
-    maps.bfs(sk.agent.current_position, False)
-    maps.show_around(sk.agent.current_position, 3)
-    # print(maps.bomb_point_maps[x][y])
-    # print(maps.spoil_maps[x][y])
-    # print(maps.get_free_neighbors(sk.agent.current_position, False))
-    # game.show_map(maps.heuristic_maps, cols, rows)
-    # game.show_map(maps.bomb_point_maps, cols, rows)
-    # game.show_map(maps.block_maps, cols, rows)
-    # game.show_node_maps(maps.visited_maps, cols, rows)
-    # for nb in nbs:
-    #     for location, action in nb.items():
-    #         lx, ly = location
-    #         print("Neighbor:", location, maps.visited_maps[lx][ly].parent.location)
-    sk.move(sk.agent.next_move())
+    sk.agent.next_move()
+    # sk.move(sk.agent.next_move())
+    maps.show()
+    pass
+
+
+@socketio.on("debug")
+def on_next_step(data):
+    agent = sk.agent
+    agent.update_maps()
+    agent.maps.show()
+    if agent.complete_move == True:
+        next_move = agent.next_move()
+        if len(next_move) > 0:
+            print("Start Move: ", next_move)
+            agent.stop_time = 0
+            agent.complete_move = False
+            sk.move(next_move)
+    elif agent.stop_time < game.MAX_STOP_TIME:
+        agent.stop_time += game.TICK_DELAY
+    elif agent.stop_time >= game.MAX_STOP_TIME:
+        agent.complete_move = True
+        agent.stop_time = 0
     # sk.agent.next_move()
+    # sk.move(sk.agent.next_move())
     pass
     
 
-def move(agent: BaseAgent):
-    print("Move")
+def move(agent: AgentV3):
     while True:
         if agent.is_start == 0:
             sk.move(game.STOP)
         elif game.control_ai == "start":
-            if agent.complete_move == True or agent.stop_time > game.MAX_STOP_TIME:
-                sk.move(agent.next_move())
-                agent.complete_move = False
-                agent.stop_time = 0
-            else:
+            agent.update_maps()
+            if agent.complete_move == True:
+                next_move = agent.next_move()
+                if len(next_move) > 0:
+                    print("Start Move: ", next_move)
+                    agent.stop_time = 0
+                    agent.complete_move = False
+                    sk.move(next_move)
+            elif agent.stop_time < game.MAX_STOP_TIME:
                 agent.stop_time += game.TICK_DELAY
+            elif agent.stop_time >= game.MAX_STOP_TIME:
+                agent.complete_move = True
+                agent.stop_time = 0
         time.sleep(game.TICK_DELAY/1000)
 
 def main(port):

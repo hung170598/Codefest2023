@@ -14,7 +14,8 @@ class Node:
 
 def get_path(node: Node):
     path = []
-    while node.parent:
+    while node.parent is not None:
+        # print(node.action, end= " ")
         path.append(node)
         node = node.parent
     return reversed(path)
@@ -27,9 +28,14 @@ def get_path_actions(path):
     return actions
 
 
-def manhattan_distance(start, end):
-    distance = abs(start[0] - end[0]) + abs(start[1] - end[1])
+def get_action(target):
+    if target:
+        action = get_path_actions(get_path(target))
+        return ''.join(action)
+    return ""
 
+def manhattan_distance(x1, y1, x2, y2):
+    distance = abs(x1 - x2) + abs(y1 - y2)
     return distance
 
 

@@ -53,11 +53,11 @@ class BaseAgent:
 
     def get_move(self):
         target = self.find_target()
-        actions = ""
+        actions = []
         # print("Target", target.location)
         if target:
             actions = get_path_actions(get_path(target))
-        return "".join(actions)[:MAX_STEP]
+        return "".join(actions)
 
     @property
     def current_position(self):
@@ -87,7 +87,7 @@ class BaseAgent:
                 return player
 
     def start_game(self):
-        self.maps.init_maps(self.game_state)
+        self.maps.init_maps(self.game_state, self.pid)
         self.is_start = 1
         print("Game Start")
 

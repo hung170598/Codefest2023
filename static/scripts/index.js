@@ -43,6 +43,9 @@ document.addEventListener('keydown', (e) => {
         case 'KeyN':
             socket.emit('next step', {});
             break;
+        case 'KeyB':
+            socket.emit('debug', {});
+            break;
     }
     if (code != '')
         socket.emit('move', { data: code });
