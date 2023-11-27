@@ -168,7 +168,7 @@ class Map_V3(Map):
         elif tmp_node.player_egg == 2:
             bomb_score = min(self.enemy_player[PLAYER_SCORE], 2)
         elif tmp_node.player_egg == 1:
-            bomb_score = -(self.my_player[PLAYER_SCORE], 2)
+            bomb_score = -min(self.my_player[PLAYER_SCORE], 2)
         elif tmp_node.player_id == 2:
             bomb_score = 2
         return bomb_score

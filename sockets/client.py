@@ -49,7 +49,7 @@ def on_join_game(data):
 @sio.on("ticktack player")
 def on_ticktack(data):
     agent.game_state = data
-    # print("tictack ", data['tag'])
+    # print("tictack ", data['map_info']['players'][0]['score'])
     if agent.is_start == 0:
         agent.start_game()
     else:

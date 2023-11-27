@@ -34,13 +34,16 @@ class AgentV3(BaseAgent):
         self.maps.update_bomb_score_maps()
 
     def next_move(self):
-        tactic, action = self.find_tactic()
-        print(tactic, action)
-        if tactic != DROP_BOMB:
-            self.delay_bomb = max(0, self.delay_bomb - TICK_DELAY)
-        else :
-            self.delay_bomb = self.cur_info["delay"]
-        return action
+        try:
+            tactic, action = self.find_tactic()
+            print(tactic, action)
+            if tactic != DROP_BOMB:
+                self.delay_bomb = max(0, self.delay_bomb - TICK_DELAY)
+            else :
+                self.delay_bomb = self.cur_info["delay"]
+            return action
+        except:
+            pass
     
     def find_tactic(self):
         x, y = self.current_position
